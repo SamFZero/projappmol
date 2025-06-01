@@ -25,7 +25,7 @@ exports.obtenerPersonaPorId = async (req, res) => {
 
 
 exports.obtenerPersonas = async (req, res) => {
-    const { tipo, pais } = req.query;
+    let { tipo, pais } = req.query;
 
     try {
         const pipeline = [
@@ -50,8 +50,14 @@ exports.obtenerPersonas = async (req, res) => {
         ];
 
         const match = {};
-        if (tipo) match.tipo = tipo;
-        if (pais) match["pais.nombre"] = pais;
+
+        if (tipo && tipo.trim() !== "") {
+            match.tipo = tipo;
+        }
+
+        if (pais && pais.trim() !== "") {
+            match["pais.nombre"] = pais;
+        }
 
         if (Object.keys(match).length > 0) {
             pipeline.push({ $match: match });
