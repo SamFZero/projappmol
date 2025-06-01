@@ -32,6 +32,7 @@ exports.obtenerPersonas = async (req, res) => {
             {
                 $lookup: {
                     from: "ciudads",
+                    localField: "ciudad_id",
                     foreignField: "_id",
                     as: "ciudad"
                 }
