@@ -38,7 +38,6 @@ exports.obtenerPersonas = async (req, res) => {
                 }
             },
             { $unwind: "$ciudad" },
-
             {
                 $lookup: {
                     from: "pais",
