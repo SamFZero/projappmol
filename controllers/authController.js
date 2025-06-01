@@ -29,8 +29,15 @@ exports.login = async (req, res) => {
         const esValido = await bcrypt.compare(password, usuario.passwordHash);
         if (!esValido) return res.status(400).json({ msg: "Credenciales inválidas" });
 
+        const payload = {
+            id: usuario._id,
+            rol: usuario.rol,
+            nombre: usuario.nombre,
+            email: usuario.email,
+        };
+
         const token = jwt.sign(
-            { id: usuario._id, rol: usuario.rol },
+            payload,
             process.env.JWT_SECRET,
             { expiresIn: "2h" }
         );
