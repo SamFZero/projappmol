@@ -37,27 +37,43 @@ exports.obtenerPersonas = async (req, res) => {
                     as: "ciudad"
                 }
             },
-            { $unwind: "$ciudad" }
-        ];
+            { $unwind: "$ciudad" },
 
-        const match = {};
-        if (tipo) match.tipo = tipo;
-        if (pais) match["ciudad.pais"] = pais;
+            {
+                $lookup: {
+                    from: "pais",
+                    localField: "ciudad.pais",
+                    foreignField: "_id",
+                    as: "pais"
+                }
+            },
+            { $unwind: "$pais" },
 
-        if (Object.keys(match).length > 0) {
-            pipeline.push({ $match: match });
-        }
+            ...(tipo || pais
+                ? [
+                    {
+                        $match: {
+                            ...(tipo ? { tipo } : {}),
+                            ...(pais ? { "pais.nombre": pais } : {})
+                        }
+                    }
+                ]
+                : []
+            ),
 
-        pipeline.push({
-            $project: {
-                nombre: 1,
-                tipo: 1,
-                ciudad_id: {
-                    nombre: "$ciudad.nombre",
-                    pais: "$ciudad.pais"
+            {
+                $project: {
+                    nombre: 1,
+                    tipo: 1,
+                    ciudad_id: {
+                        nombre: "$ciudad.nombre",
+                        pais_id: {
+                            nombre: "$pais.nombre"
+                        }
+                    }
                 }
             }
-        });
+        ];
 
         const personas = await Persona.aggregate(pipeline);
         res.json(personas);
