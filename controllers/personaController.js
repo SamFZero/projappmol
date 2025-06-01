@@ -10,6 +10,20 @@ exports.crearPersona = async (req, res) => {
     }
 };
 
+exports.obtenerPersonaPorId = async (req, res) => {
+    try {
+        const persona = await Persona.findById(req.params.id).populate("ciudad_id");
+        if (!persona) {
+            return res.status(404).json({ msg: "Persona no encontrada" });
+        }
+        res.json(persona);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: err.message });
+    }
+};
+
+
 exports.obtenerPersonas = async (req, res) => {
     const { tipo, pais } = req.query;
 
