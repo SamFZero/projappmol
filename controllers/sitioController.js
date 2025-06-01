@@ -15,3 +15,15 @@ exports.obtenerSitios = async (req, res) => {
     const sitios = await Sitio.find(ciudad_id ? { ciudad_id } : {}).populate("ciudad_id");
     res.json(sitios);
 };
+
+exports.obtenerSitioPorId = async (req, res) => {
+    try {
+        const sitio = await Sitio.findById(req.params.id).populate("ciudad_id");
+        if (!sitio) {
+            return res.status(404).json({ msg: "Sitio no encontrado" });
+        }
+        res.json(sitio);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};

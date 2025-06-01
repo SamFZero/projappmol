@@ -8,7 +8,7 @@ const SitioSchema = new mongoose.Schema({
     },
     ubicacion: {
         type: { type: String, enum: ["Point"], default: "Point" },
-        coordinates: { type: [Number], required: true } // [longitud, latitud]
+        coordinates: { type: [Number], required: true }
     },
     platos: [
         {

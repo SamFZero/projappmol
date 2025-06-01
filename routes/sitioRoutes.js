@@ -3,7 +3,8 @@ const router = express.Router();
 const { crearSitio, obtenerSitios } = require("../controllers/sitioController");
 const { auth, isAdmin } = require("../middleware/authMiddleware");
 
-router.post("/", auth, isAdmin, crearSitio); // Solo admin
+router.post("/", auth, isAdmin, crearSitio);
 router.get("/", obtenerSitios);
+router.get("/:id", obtenerSitioPorId);
 
 module.exports = router;
