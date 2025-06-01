@@ -11,8 +11,18 @@ exports.crearCiudad = async (req, res) => {
 };
 
 exports.obtenerCiudades = async (req, res) => {
-    const { pais } = req.query;
-    const filtro = pais ? { pais } : {};
-    const ciudades = await Ciudad.find(filtro);
-    res.json(ciudades);
+    try {
+        const { pais } = req.query;
+
+        const ciudades = await Ciudad.find()
+            .populate("pais_id");
+
+        const resultado = pais
+            ? ciudades.filter((c) => c.pais_id?.nombre === pais)
+            : ciudades;
+
+        res.json(resultado);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
