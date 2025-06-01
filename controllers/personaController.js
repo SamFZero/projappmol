@@ -50,14 +50,8 @@ exports.obtenerPersonas = async (req, res) => {
         ];
 
         const match = {};
-
-        if (tipo && tipo.trim() !== "") {
-            match.tipo = tipo;
-        }
-
-        if (pais && pais.trim() !== "") {
-            match["pais.nombre"] = pais;
-        }
+        if (tipo && tipo !== "") match.tipo = tipo;
+        if (pais && pais !== "") match["pais.nombre"] = pais;
 
         if (Object.keys(match).length > 0) {
             pipeline.push({ $match: match });
@@ -82,4 +76,4 @@ exports.obtenerPersonas = async (req, res) => {
         console.error(err);
         res.status(500).json({ msg: err.message });
     }
-};
+}
