@@ -11,9 +11,44 @@ exports.crearPersona = async (req, res) => {
 };
 
 exports.obtenerPersonas = async (req, res) => {
-    const filtro = {};
-    if (req.query.tipo) filtro.tipo = req.query.tipo;
-    if (req.query.ciudad_id) filtro.ciudad_id = req.query.ciudad_id;
-    const personas = await Persona.find(filtro).populate("ciudad_id");
-    res.json(personas);
+    const { tipo, pais } = req.query;
+
+    try {
+        const pipeline = [
+            {
+                $lookup: {
+                    from: "ciudads",
+                    localField: "ciudad_id",
+                    foreignField: "_id",
+                    as: "ciudad"
+                }
+            },
+            { $unwind: "$ciudad" }
+        ];
+
+        const match = {};
+        if (tipo) match.tipo = tipo;
+        if (pais) match["ciudad.pais"] = pais;
+
+        if (Object.keys(match).length > 0) {
+            pipeline.push({ $match: match });
+        }
+
+        pipeline.push({
+            $project: {
+                nombre: 1,
+                tipo: 1,
+                ciudad_id: {
+                    nombre: "$ciudad.nombre",
+                    pais: "$ciudad.pais"
+                }
+            }
+        });
+
+        const personas = await Persona.aggregate(pipeline);
+        res.json(personas);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: err.message });
+    }
 };
