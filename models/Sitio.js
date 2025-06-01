@@ -18,6 +18,6 @@ const SitioSchema = new mongoose.Schema({
     ]
 });
 
-SitioSchema.index({ ubicacion: "2dsphere" }); // Para geolocalización
+SitioSchema.index({ ubicacion: "2dsphere" });
 
 module.exports = mongoose.model("Sitio", SitioSchema);
