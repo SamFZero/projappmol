@@ -47,33 +47,29 @@ exports.obtenerPersonas = async (req, res) => {
                     as: "pais"
                 }
             },
-            { $unwind: "$pais" },
+            { $unwind: "$pais" }
+        ];
 
-            ...(tipo || pais
-                ? [
-                    {
-                        $match: {
-                            ...(tipo ? { tipo } : {}),
-                            ...(pais ? { "pais.nombre": pais } : {})
-                        }
-                    }
-                ]
-                : []
-            ),
+        const match = {};
+        if (tipo) match.tipo = tipo;
+        if (pais) match["pais.nombre"] = pais;
 
-            {
-                $project: {
-                    nombre: 1,
-                    tipo: 1,
-                    ciudad_id: {
-                        nombre: "$ciudad.nombre",
-                        pais_id: {
-                            nombre: "$pais.nombre"
-                        }
+        if (Object.keys(match).length > 0) {
+            pipeline.push({ $match: match });
+        }
+
+        pipeline.push({
+            $project: {
+                nombre: 1,
+                tipo: 1,
+                ciudad_id: {
+                    nombre: "$ciudad.nombre",
+                    pais_id: {
+                        nombre: "$pais.nombre"
                     }
                 }
             }
-        ];
+        });
 
         const personas = await Persona.aggregate(pipeline);
         res.json(personas);
@@ -81,4 +77,4 @@ exports.obtenerPersonas = async (req, res) => {
         console.error(err);
         res.status(500).json({ msg: err.message });
     }
-};
+
