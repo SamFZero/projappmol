@@ -1,6 +1,7 @@
 const Etiqueta = require("../models/Etiqueta");
 
 exports.crearEtiqueta = async (req, res) => {
+    console.log(req.body)
     try {
         const etiqueta = new Etiqueta({
             ...req.body,
