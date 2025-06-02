@@ -14,6 +14,11 @@ exports.registrarVisita = async (req, res) => {
 };
 
 exports.obtenerVisitasPorUsuario = async (req, res) => {
-    const visitas = await Visita.find({ usuario_id: req.usuario.id }).populate("sitio_id");
-    res.json(visitas);
+    try {
+        const visitas = await Visita.find({ usuario_id: req.usuario.id })
+            .populate("sitio_id");
+        res.json(visitas);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
